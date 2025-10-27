@@ -80,12 +80,12 @@ function App() {
       {/* Header Navigation */}
       <header className="fixed top-0 w-full bg-white/95 backdrop-blur-sm shadow-md z-50">
         <nav className="container-custom py-4">
-          <div className="flex justify-between items-center gap-2">
-            <div className="flex items-center space-x-2 min-w-0 flex-shrink">
-              <WrenchScrewdriverIcon className="h-8 w-8 text-primary-600 flex-shrink-0" />
-              <h1 className="text-lg sm:text-2xl font-bold text-secondary-900 truncate">Mike's Handyman</h1>
+          <div className="flex justify-between items-center gap-3">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <WrenchScrewdriverIcon className="h-7 w-7 sm:h-8 sm:w-8 text-primary-600 flex-shrink-0" />
+              <h1 className="text-base sm:text-2xl font-bold text-secondary-900 truncate">Mike's Handyman</h1>
             </div>
-            <div className="hidden md:flex items-center space-x-6">
+            <div className="hidden md:flex items-center space-x-6 flex-shrink-0">
               <button onClick={() => scrollToSection('services')} className="text-secondary-700 hover:text-primary-600 transition-colors">
                 Services
               </button>
@@ -102,7 +102,7 @@ function App() {
                 Call Now
               </a>
             </div>
-            <a href="tel:7345777138" className="md:hidden btn-primary text-sm py-2 px-4 whitespace-nowrap flex-shrink-0">
+            <a href="tel:7345777138" className="md:hidden btn-primary text-xs py-2.5 px-3 whitespace-nowrap flex-shrink-0">
               Call Now
             </a>
           </div>
