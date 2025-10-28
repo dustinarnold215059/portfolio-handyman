@@ -25,6 +25,8 @@ function App() {
     message: '',
   });
   const [formStatus, setFormStatus] = useState({ submitted: false, error: false });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Smooth scroll to section
   const scrollToSection = (sectionId) => {
@@ -34,29 +36,77 @@ function App() {
     }
   };
 
+  // Validation functions
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone) => {
+    const phoneRegex = /^[\d\s\-().+]{10,}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!validatePhone(formData.phone)) {
+      newErrors.phone = 'Please enter a valid phone number';
+    }
+
+    if (!formData.service) {
+      newErrors.service = 'Please select a service';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Basic validation
-    if (!formData.name || !formData.email || !formData.phone || !formData.service) {
+    if (!validateForm()) {
       setFormStatus({ submitted: false, error: true });
       return;
     }
 
-    // Simulate form submission
-    console.log('Form submitted:', formData);
-    setFormStatus({ submitted: true, error: false });
+    setIsSubmitting(true);
+    setFormStatus({ submitted: false, error: false });
 
-    // Reset form after 3 seconds
+    // Simulate form submission
     setTimeout(() => {
-      setFormData({ name: '', email: '', phone: '', service: '', message: '' });
-      setFormStatus({ submitted: false, error: false });
-    }, 3000);
+      setFormStatus({ submitted: true, error: false });
+      setIsSubmitting(false);
+
+      // Reset form after 5 seconds
+      setTimeout(() => {
+        setFormData({ name: '', email: '', phone: '', service: '', message: '' });
+        setFormStatus({ submitted: false, error: false });
+        setErrors({});
+      }, 5000);
+    }, 1000);
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: '' });
+    }
   };
 
   // Animation variants
@@ -541,9 +591,14 @@ function App() {
                           value={formData.name}
                           onChange={handleChange}
                           required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                            errors.name ? 'border-red-500' : 'border-gray-300'
+                          }`}
                           placeholder="John Smith"
                         />
+                        {errors.name && (
+                          <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                        )}
                       </div>
                       <div>
                         <label htmlFor="email" className="block text-sm font-semibold text-secondary-900 mb-2">
@@ -556,9 +611,14 @@ function App() {
                           value={formData.email}
                           onChange={handleChange}
                           required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                            errors.email ? 'border-red-500' : 'border-gray-300'
+                          }`}
                           placeholder="john@example.com"
                         />
+                        {errors.email && (
+                          <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                        )}
                       </div>
                     </div>
 
@@ -574,9 +634,14 @@ function App() {
                           value={formData.phone}
                           onChange={handleChange}
                           required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                            errors.phone ? 'border-red-500' : 'border-gray-300'
+                          }`}
                           placeholder="(734) 555-0123"
                         />
+                        {errors.phone && (
+                          <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+                        )}
                       </div>
                       <div>
                         <label htmlFor="service" className="block text-sm font-semibold text-secondary-900 mb-2">
@@ -588,7 +653,9 @@ function App() {
                           value={formData.service}
                           onChange={handleChange}
                           required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                            errors.service ? 'border-red-500' : 'border-gray-300'
+                          }`}
                         >
                           <option value="">Select a service</option>
                           <option value="plumbing">Plumbing</option>
@@ -598,6 +665,9 @@ function App() {
                           <option value="emergency">Emergency Service</option>
                           <option value="other">Other</option>
                         </select>
+                        {errors.service && (
+                          <p className="text-red-500 text-sm mt-1">{errors.service}</p>
+                        )}
                       </div>
                     </div>
 
@@ -622,8 +692,23 @@ function App() {
                       </div>
                     )}
 
-                    <button type="submit" className="w-full btn-primary">
-                      Get Free Estimate
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className={`w-full transition-all duration-300 ${
+                        isSubmitting
+                          ? 'bg-gray-400 cursor-not-allowed py-3 px-6 rounded-lg text-white font-semibold'
+                          : 'btn-primary'
+                      }`}
+                    >
+                      {isSubmitting ? (
+                        <div className="flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
+                          Submitting...
+                        </div>
+                      ) : (
+                        'Get Free Estimate'
+                      )}
                     </button>
 
                     <p className="text-sm text-secondary-600 text-center">
